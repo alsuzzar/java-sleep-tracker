@@ -29,24 +29,10 @@ public class SleepingSession {
         return sleepQuality;
     }
 
-    /**
-     * Проверка, является ли сессия ночным сном
-     * Дневные сессии считаем те, что начались до 18:00
-     */
-    public boolean isNightSleep() {
-        return start.toLocalTime().isAfter(LocalTime.of(18, 0));
-    }
-
-    /**
-     * Время начала сна для анализа хронотипа
-     */
     public LocalTime getSleepStartTime() {
         return start.toLocalTime();
     }
 
-    /**
-     * Время пробуждения для анализа хронотипа
-     */
     public LocalTime getSleepEndTime() {
         return end.toLocalTime();
     }

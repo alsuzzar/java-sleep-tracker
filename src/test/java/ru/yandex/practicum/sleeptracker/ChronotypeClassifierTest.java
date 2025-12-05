@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ChronotypeClassifierTest {
 
     @Test
-    void testSovaClassification() {
+    void testOwlClassification() {
         List<SleepingSession> sessions = List.of(
                 new SleepingSession(LocalDateTime.of(2025, 11, 26, 23, 30),
                         LocalDateTime.of(2025, 11, 27, 10, 0),
@@ -19,27 +19,27 @@ public class ChronotypeClassifierTest {
                         LocalDateTime.of(2025, 11, 27, 9, 30),
                         SleepQuality.NORMAL)
         );
-        assertEquals(Chronotype.SOVA, ChronotypeClassifier.classifyUser(sessions));
+        assertEquals(Chronotype.OWL, ChronotypeClassifier.classifyUser(sessions));
     }
 
     @Test
-    void testJavoronokClassification() {
+    void testLarkClassification() {
         List<SleepingSession> sessions = List.of(
                 new SleepingSession(LocalDateTime.of(2025, 11, 26, 21, 0),
                         LocalDateTime.of(2025, 11, 27, 6, 30),
                         SleepQuality.GOOD)
         );
-        assertEquals(Chronotype.JAVORONOK, ChronotypeClassifier.classifyUser(sessions));
+        assertEquals(Chronotype.LARK, ChronotypeClassifier.classifyUser(sessions));
     }
 
     @Test
-    void testGolubClassification() {
+    void testPigeonClassification() {
         List<SleepingSession> sessions = List.of(
                 new SleepingSession(LocalDateTime.of(2025, 11, 26, 22, 30),
                         LocalDateTime.of(2025, 11, 27, 8, 0),
                         SleepQuality.GOOD)
         );
-        assertEquals(Chronotype.GOLUB, ChronotypeClassifier.classifyUser(sessions));
+        assertEquals(Chronotype.PIGEON, ChronotypeClassifier.classifyUser(sessions));
     }
 
     @Test
@@ -52,7 +52,7 @@ public class ChronotypeClassifierTest {
                         LocalDateTime.of(2025, 11, 27, 6, 30),
                         SleepQuality.GOOD)
         );
-        assertEquals(Chronotype.JAVORONOK, ChronotypeClassifier.classifyUser(sessions));
+        assertEquals(Chronotype.LARK, ChronotypeClassifier.classifyUser(sessions));
     }
 
     @Test
@@ -65,6 +65,6 @@ public class ChronotypeClassifierTest {
                         LocalDateTime.of(2025, 11, 28, 6, 30),
                         SleepQuality.GOOD)   // Жаворонок
         );
-        assertEquals(Chronotype.GOLUB, ChronotypeClassifier.classifyUser(sessions));
+        assertEquals(Chronotype.PIGEON, ChronotypeClassifier.classifyUser(sessions));
     }
 }

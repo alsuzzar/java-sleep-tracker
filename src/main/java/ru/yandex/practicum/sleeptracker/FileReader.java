@@ -7,21 +7,19 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FileReader {
 
     public static List<SleepingSession> loadFromFile(File file) {
-        List<String> lines;
-        try {
-            lines = Files.readAllLines(file.toPath());
+        try (Stream<String> lines = Files.lines(file.toPath())) {
+            return lines
+                    .filter(line -> !line.isBlank())
+                    .map(FileReader::fromString)
+                    .collect(Collectors.toList());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Ошибка при чтении файла: " + file.getPath(), e);
         }
-        List<SleepingSession> listOfSessions = lines.stream()
-                .filter(line -> !line.isBlank())
-                .map(FileReader::fromString)
-                .collect(Collectors.toList());
-        return listOfSessions;
     }
 
     public static SleepingSession fromString(String value) {

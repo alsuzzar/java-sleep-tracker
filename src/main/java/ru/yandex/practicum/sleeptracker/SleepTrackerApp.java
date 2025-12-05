@@ -28,9 +28,12 @@ public class SleepTrackerApp {
         functions.add(new SleeplessNightsFunc());
         functions.add(new ChronotypeFunc());
 
-        for (Function<List<SleepingSession>, SleepAnalysisResult<?>> func : functions) {
+        functions.forEach(func -> processFunction(func, listOfSessions));
+    }
+        private static void processFunction(Function<List<SleepingSession>, SleepAnalysisResult<?>> func,
+                                            List<SleepingSession> listOfSessions) {
+
             SleepAnalysisResult<?> result = func.apply(listOfSessions);
             System.out.println(result.getMessage() + ": " + result.getValue());
         }
-    }
 }

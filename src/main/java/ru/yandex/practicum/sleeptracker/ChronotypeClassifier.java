@@ -1,33 +1,71 @@
 package ru.yandex.practicum.sleeptracker;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ChronotypeClassifier {
 
     public static Chronotype classifyUser(List<SleepingSession> sessions) {
-        int sovaCount = 0;
-        int javoronokCount = 0;
-        int golubCount = 0;
+        if (sessions.isEmpty()) return Chronotype.PIGEON;
 
-        for (SleepingSession session : sessions) {
-            LocalTime sleepTime = session.getStart().toLocalTime();
-            LocalTime wakeTime = session.getEnd().toLocalTime();
+        List<SleepingSession> sortedSessions = sessions.stream()
+                .sorted((s1, s2) -> s1.getStart().compareTo(s2.getStart()))
+                .toList();
 
-            // Игнорируем дневные сессии: считаем только ночные (начало после 18:00)
-            if (sleepTime.isBefore(LocalTime.of(18, 0))) continue;
+        LocalDateTime firstSessionStart = sortedSessions.get(0).getStart();
+        LocalDateTime lastSessionEnd = sortedSessions.get(sortedSessions.size() - 1).getEnd();
 
-            if (sleepTime.isAfter(LocalTime.of(23, 0)) && wakeTime.isAfter(LocalTime.of(9, 0))) {
-                sovaCount++;
-            } else if (sleepTime.isBefore(LocalTime.of(22, 0)) && wakeTime.isBefore(LocalTime.of(7, 0))) {
-                javoronokCount++;
-            } else {
-                golubCount++;
-            }
-        }
+        LocalDate startNightDate = firstSessionStart.toLocalTime().isBefore(LocalTime.NOON)
+                ? firstSessionStart.toLocalDate().minusDays(1)
+                : firstSessionStart.toLocalDate();
+        LocalDate endNightDate = lastSessionEnd.toLocalDate();
 
-        if (sovaCount > javoronokCount && sovaCount > golubCount) return Chronotype.SOVA;
-        if (javoronokCount > sovaCount && javoronokCount > golubCount) return Chronotype.JAVORONOK;
-        return Chronotype.GOLUB;
+        // Генерируем список ночей
+        List<LocalDate> nights = startNightDate.datesUntil(endNightDate.plusDays(1))
+                .toList();
+
+        List<Chronotype> nightTypes = nights.stream()
+                .map(night -> {
+                    LocalDateTime nightStart = night.atTime(0, 0);
+                    LocalDateTime nightEnd = night.atTime(6, 0);
+
+                    return sortedSessions.stream()
+                            .filter(s -> s.getEnd().isAfter(nightStart) && s.getStart().isBefore(nightEnd))
+                            .findFirst()
+                            .map(session -> {
+                                LocalTime sleepTime = session.getStart().toLocalTime();
+                                LocalTime wakeTime = session.getEnd().toLocalTime();
+
+                                if (sleepTime.isAfter(LocalTime.of(23, 0)) && wakeTime.isAfter(LocalTime.of(9, 0))) {
+                                    return Chronotype.OWL;
+                                } else if (sleepTime.isBefore(LocalTime.of(22, 0)) && wakeTime.isBefore(LocalTime.of(7, 0))) {
+                                    return Chronotype.LARK;
+                                } else {
+                                    return Chronotype.PIGEON;
+                                }
+                            })
+                            .orElse(null); // бессонная ночь
+                })
+                .filter(type -> type != null) // исключаем бессонные ночи
+                .collect(Collectors.toList());
+
+        if (nightTypes.isEmpty()) return Chronotype.PIGEON;
+
+        Map<Chronotype, Long> counts = nightTypes.stream()
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+        long maxCount = counts.values().stream().max(Long::compare).get();
+
+        List<Chronotype> maxTypes = counts.entrySet().stream()
+                .filter(entry -> entry.getValue() == maxCount)
+                .map(Map.Entry::getKey)
+                .toList();
+
+        return maxTypes.size() > 1 ? Chronotype.PIGEON : maxTypes.get(0);
     }
 }
