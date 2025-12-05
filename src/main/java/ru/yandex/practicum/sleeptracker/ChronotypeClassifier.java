@@ -52,7 +52,7 @@ public class ChronotypeClassifier {
                             .orElse(null); // бессонная ночь
                 })
                 .filter(type -> type != null) // исключаем бессонные ночи
-                .collect(Collectors.toList());
+                .toList();
 
         if (nightTypes.isEmpty()) return Chronotype.PIGEON;
 

@@ -30,10 +30,11 @@ public class SleepTrackerApp {
 
         functions.forEach(func -> processFunction(func, listOfSessions));
     }
-        private static void processFunction(Function<List<SleepingSession>, SleepAnalysisResult<?>> func,
-                                            List<SleepingSession> listOfSessions) {
 
-            SleepAnalysisResult<?> result = func.apply(listOfSessions);
-            System.out.println(result.getMessage() + ": " + result.getValue());
-        }
+    private static void processFunction(Function<List<SleepingSession>, SleepAnalysisResult<?>> func,
+                                        List<SleepingSession> listOfSessions) {
+
+        SleepAnalysisResult<?> result = func.apply(listOfSessions);
+        System.out.println(result.getMessage() + ": " + result.getValue());
+    }
 }
